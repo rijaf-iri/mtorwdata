@@ -13,7 +13,7 @@ precip_5min2hour <- function(start_min, end_min, dir5MIN,
                              dirOUT, min.frac = 0.75)
 {
     start <- strptime(start_min, "%Y-%m-%d-%H-%M", tz = "UTC")
-    end <- strptime(end_min, "%Y-%m-%d-%H-%M", tz = "UTC")
+    end <- strptime(end_min, "%Y-%m-%d-%H-%M", tz = "UTC") + 43200
 
     daty <- format(seq(start, end, "day"), "%Y%m%d")
 
