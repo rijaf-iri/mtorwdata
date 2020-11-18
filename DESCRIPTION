@@ -16,4 +16,4 @@ Imports:
     sp,
     rgdal,
     ncdf4,
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
