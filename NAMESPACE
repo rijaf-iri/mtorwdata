@@ -1,5 +1,6 @@
 
 importFrom("utils", "read.table", "write.table")
+importFrom("methods", "as", "slot")
 
 export(interp_surface_grid)
 export(interp3d_xsec)
@@ -10,3 +11,10 @@ export(precip_hour2daily)
 export(precip_daily2month)
 export(qpe_accumulation)
 export(down_qpe_accumulation)
+
+export(extractQPE)
+export(extractGeomPoints)
+export(extractGeomPolys)
+export(extractGeomRect)
+
+export(deleteUploadDir)
