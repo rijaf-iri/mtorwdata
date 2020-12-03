@@ -35,16 +35,20 @@ extractQPE <- function(dirQPE, dirDOWN, timestep, timerange, geom, min_frac = 1.
                 attr_values <- "VAL"
                 attr_name <- "ExtrAttr"
                 nom <- geom$layer
-            }
+            }else{
+               attr_name <- geom$field
+               attr_values <- as.character(shpf@data[, attr_name])
+               nom <- gsub("[^[:alnum:]]", "", trimws(attr_values))
+               nom <- stringi::stri_trans_general(str = nom, id = "Latin-ASCII")
+           }
         }else{
-            attr_values <- as.character(do.call(c, geom$id))
             attr_name <- geom$field
+            attr_values <- as.character(do.call(c, geom$id))
 
             iattr <- as.character(shpf@data[, attr_name])
             iname <- as.character(shpf@data[, geom$nameID])
             nom <- iname[match(attr_values, iattr)]
-            nom <- trimws(nom)
-            nom <- gsub("[^[:alnum:]]", "", nom)
+            nom <- gsub("[^[:alnum:]]", "", trimws(nom))
             # nom <- iconv(nom, from = "UTF-8", to = 'ASCII//TRANSLIT')
             nom <- stringi::stri_trans_general(str = nom, id = "Latin-ASCII")
         }
