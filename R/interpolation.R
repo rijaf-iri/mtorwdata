@@ -66,3 +66,36 @@ interp3d_xsec <- function(x, y, z, v, x_g, y_g, z_g){
     out <- out$var1.pred
     return(out)
 }
+
+#' Regrid fields from pseudo CAPPI
+#'
+#' Regrid fields from pseudo CAPPI
+#' 
+#' @param x,y vectors giving the coordinates of the grid to be interpolated
+#' @param z list of vectors containing the fields to interpolate (same length as x and y)
+#' @param x_g,y_g vectors giving the coordinates of the new grid
+#' 
+#' @return a list of matrices containing the interpolated fields
+#' 
+#' @export
+
+interp_ppi_ranges_cappi <- function(x, y, z, x_g, y_g){
+    nx <- length(x_g)
+    ny <- length(y_g)
+    grd <- expand.grid(x = x_g, y = y_g)
+    coords <- data.frame(x = x, y = y)
+
+    out <- lapply(z, function(v){
+        dat <- coords
+        v[is.nan(v)] <- NA
+        dat$z <- v
+        ina <- is.na(dat$z)
+        if(all(ina)) return(matrix(NA, nx, ny))
+        dat <- dat[!ina, , drop = FALSE]
+        kr <- gstat::krige(z~1, locations = ~x+y, data = dat, newdata = grd,
+                           nmax = 1, maxdist = 0.0135, debug.level = 0)
+        matrix(kr$var1.pred, nx, ny)
+    })
+
+    return(out)
+}

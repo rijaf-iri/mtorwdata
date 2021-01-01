@@ -126,3 +126,13 @@ reshapeXYZ2Matrix <- function(df){
     return(list(x = x, y = y, z = z))
 }
 
+##################
+
+createBlock <- function(cellsize, fac = 0.5, len = 4){
+    sDX <- cellsize[1]*fac
+    dBX <- seq(-sDX, sDX, length.out = len)
+    sDY <- cellsize[2] * fac
+    dBY <- seq(-sDY, sDY, length.out = len)
+    bGrd <- expand.grid(x = dBX, y = dBY)
+    return(bGrd)
+}

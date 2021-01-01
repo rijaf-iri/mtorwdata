@@ -4,6 +4,8 @@ importFrom("methods", "as", "slot")
 
 export(interp_surface_grid)
 export(interp3d_xsec)
+export(interp_ppi_ranges_cappi)
+
 export(readUploadCsvCoords)
 export(readUploadShptoGeoJSON)
 export(precip_5min2hour)
