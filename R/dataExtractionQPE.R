@@ -70,8 +70,9 @@ extractQPE <- function(dirQPE, dirDOWN, timestep, timerange, geom, min_frac = 1.
     ret <- extractQPEnc(timestep, timerange, dirQPE, ncInfo, dirDOWN, geomObj, min_frac)
 
     if(is.null(ret)){
-        out <- "no-data"
-        type <- "no-data"
+        out <- "no-data.txt"
+        type <- "txt"
+        file.create(file.path(dirDOWN, out))
     }else{
         out <- ret
         type <- "csv"
