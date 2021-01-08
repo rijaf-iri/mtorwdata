@@ -2,23 +2,25 @@
 #'
 #' Aggregate precipitation accumulation from single scan to hourly.
 #' 
-#' @param start_min,end_min start and end time of the period to aggregate with format YYYY-mm-dd-HH-MM in "UTC"
+#' @param start_min,end_min start and end time of the period to aggregate with format YYYY-mm-dd HH:MM (local time)
 #' @param dir5MIN full path to the directory containing the single scan NetCDF files
 #' @param dirOUT full path to the directory to save the aggregate data
 #' @param min.frac minimum fraction of non missing values
+#' @param fileprefix prefix of the qpe file names
 #' 
 #' @export
 
 precip_5min2hour <- function(start_min, end_min, dir5MIN,
-                             dirOUT, min.frac = 0.75)
+                             dirOUT, min.frac = 0.75,
+                             fileprefix = "qpe_")
 {
-    start <- strptime(start_min, "%Y-%m-%d-%H-%M", tz = "UTC")
-    end <- strptime(end_min, "%Y-%m-%d-%H-%M", tz = "UTC") + 43200
+    start <- strptime(start_min, "%Y-%m-%d %H:%M")
+    end <- strptime(end_min, "%Y-%m-%d %H:%M") + 43200
 
     daty <- format(seq(start, end, "day"), "%Y%m%d")
 
     listFiles <- lapply(daty, function(tt){
-        pattern <- paste0("qpe_", tt, ".+\\.nc$")
+        pattern <- paste0(fileprefix, tt, ".+\\.nc$")
         list.files(dir5MIN, pattern)
     })
     listFiles <- do.call(c, listFiles)
@@ -32,7 +34,7 @@ precip_5min2hour <- function(start_min, end_min, dir5MIN,
     if(all(!ifull)) return(NULL)
 
     odaty <- names(index)
-    ohours <- as.numeric(strptime(odaty, "%Y%m%d%H", tz = "UTC"))/3600
+    ohours <- as.numeric(strptime(odaty, "%Y%m%d%H"))/3600
     timeUnit <- "hours since 1970-01-01 00:00:00"
 
     nc <- ncdf4::nc_open(file.path(dir5MIN, listFiles[1]))
@@ -65,7 +67,7 @@ precip_5min2hour <- function(start_min, end_min, dir5MIN,
         grd.ncout <- ncdf4::ncvar_def('precip', 'mm', list(lon, lat, time), -999, prec = 'float',
                                       longname = 'Radar estimated precipitation accumulation',
                                       compression = 6)
-        out.ncfiles <- file.path(dirOUT, paste0("precip_", odaty[ix], ".nc"))
+        out.ncfiles <- file.path(dirOUT, paste0(fileprefix, odaty[ix], ".nc"))
         ncout <- ncdf4::nc_create(out.ncfiles, grd.ncout)
         ncdf4::ncvar_put(ncout, grd.ncout, precip)
 
@@ -74,8 +76,7 @@ precip_5min2hour <- function(start_min, end_min, dir5MIN,
         ncdf4::ncatt_put(ncout, "lat", "standard_name", "latitude")
         ncdf4::ncatt_put(ncout, "lat", "axis", "Y")
         ncdf4::ncatt_put(ncout, "time", "axis", "T")
-        ncdf4::ncatt_put(ncout, 0, "description",
-                         'Quantitative precipitation estimation from Z-R relationship')
+        ncdf4::ncatt_put(ncout, 0, "description", 'Quantitative precipitation estimation')
         ncdf4::nc_close(ncout)
     }
 

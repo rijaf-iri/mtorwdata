@@ -4,16 +4,25 @@
 \alias{precip_5min2hour}
 \title{Precipitation aggregation to hourly}
 \usage{
-precip_5min2hour(start_min, end_min, dir5MIN, dirOUT, min.frac = 0.75)
+precip_5min2hour(
+  start_min,
+  end_min,
+  dir5MIN,
+  dirOUT,
+  min.frac = 0.75,
+  fileprefix = "qpe_"
+)
 }
 \arguments{
-\item{start_min, end_min}{start and end time of the period to aggregate with format YYYY-mm-dd-HH-MM in "UTC"}
+\item{start_min, end_min}{start and end time of the period to aggregate with format YYYY-mm-dd HH:MM (local time)}
 
 \item{dir5MIN}{full path to the directory containing the single scan NetCDF files}
 
 \item{dirOUT}{full path to the directory to save the aggregate data}
 
 \item{min.frac}{minimum fraction of non missing values}
+
+\item{fileprefix}{prefix of the qpe file names}
 }
 \description{
 Aggregate precipitation accumulation from single scan to hourly.
