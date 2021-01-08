@@ -21,4 +21,5 @@ Imports:
     ncdf4,
     reshape2,
     methods,
+    curl,
 RoxygenNote: 7.1.1

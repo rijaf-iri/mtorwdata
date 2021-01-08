@@ -20,3 +20,6 @@ export(extractGeomPolys)
 export(extractGeomRect)
 
 export(deleteUploadDir)
+
+export(awsGetHourlyPrecip)
+export(computeQPECAPPI)
