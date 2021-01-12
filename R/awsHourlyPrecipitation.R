@@ -2,8 +2,8 @@
 #'
 #' Get hourly precipitation data for all AWS.
 #' 
-#' @param start_time start time, format "yyyy-mm-dd HH:00"
-#' @param end_time end time, format "yyyy-mm-dd HH:00"
+#' @param start_time start time, format "YYYY-mm-dd HH:00"
+#' @param end_time end time, format "YYYY-mm-dd HH:00"
 #' @param url the URL of the server. Ex: "http://192.168.1.10:8080"
 #' 
 #' @return a list object

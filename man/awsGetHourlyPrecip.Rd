@@ -7,9 +7,9 @@
 awsGetHourlyPrecip(start_time, end_time, url)
 }
 \arguments{
-\item{start_time}{start time, format "yyyy-mm-dd HH:00"}
+\item{start_time}{start time, format "YYYY-mm-dd HH:00"}
 
-\item{end_time}{end time, format "yyyy-mm-dd HH:00"}
+\item{end_time}{end time, format "YYYY-mm-dd HH:00"}
 
 \item{url}{the URL of the server. Ex: "http://192.168.1.10:8080"}
 }

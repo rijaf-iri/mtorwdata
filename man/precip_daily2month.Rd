@@ -11,8 +11,8 @@ precip_daily2month(
   inFormat,
   dirOUT,
   outFormat,
-  min.frac = 0.9,
-  longname = "Merged AWS-Radar monthly rainfall"
+  min_frac = 0.9,
+  long_name = "Merged AWS-Radar monthly rainfall"
 )
 }
 \arguments{
@@ -26,9 +26,9 @@ precip_daily2month(
 
 \item{outFormat}{format of the output file name. Ex: "precip_mrg_\%s\%s.nc"}
 
-\item{min.frac}{minimum fraction of non missing values}
+\item{min_frac}{minimum fraction of non missing values}
 
-\item{longname}{long name for the NetCDF variable precip}
+\item{long_name}{long name for the NetCDF variable precip}
 }
 \description{
 Aggregate daily precipitation to monthly.

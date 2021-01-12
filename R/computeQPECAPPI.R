@@ -3,16 +3,37 @@
 #'
 #' Compute QPE from CAPPI for single scan radar polar data.
 #' 
-#' @param url the URL of the server. Ex: "http://192.168.1.10:8080"
-#' @param dirOUT full path to the directory to save the output
-#' @param start_time start time (in local time), format "yyyy-mm-dd HH:MM"
-#' @param end_time end time (in local time), format "yyyy-mm-dd HH:MM"
-#' @param cappi a list of parameters to be used to create the CAPPI
-#' @param qpe a list of parameters to be used to compute the precipitation rate
-#' @param dbz_thres a list of the minimum and maximum reflectivity threshold
-#' @param apply_cmd logical, apply clutter mitigation decision
-#' @param pia a list of parameters to be used to correct the attenuation. NULL no correction performed. 
-#' @param filter a list of parameters to be used to filter the data. NULL no filtering applied. 
+#' @param url The URL of the server. Ex: "http://192.168.1.10:8080"
+#' @param dirOUT Full path to the directory to save the output
+#' @param start_time,end_time The start and end time same time zone as \code{time_zone}, format "YYYY-mm-dd HH:MM"
+#' @param cappi A named list of parameters to be used to create the CAPPI.
+#' @param qpe A named list of parameters to be used to compute the precipitation rate.
+#' @param dbz_thres A named list of the minimum and maximum reflectivity threshold.
+#'                  Default \code{dbz_thres = list(min = 20, max = 65)}
+#' @param apply_cmd Logical, apply clutter mitigation decision to the fields to use to compute the QPE.
+#'                  Default \code{TRUE}, applying CMD.
+#' @param pia A named list of parameters to be used to correct the attenuation.
+#'            Default \code{NULL}, no correction performed. 
+#' @param filter A named list of parameters to be used to filter the data.
+#'               Default \code{NULL}, no filtering applied.
+#' @param time_zone the time zone of \code{start_time}, \code{end_time} and the output QPE.
+#'                 Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"
+#' 
+#' @section CAPPI parameters:
+#' cappi
+#' 
+#' @section QPE parameters:
+#' qpe
+#'
+#' @section Attenuation correction parameters:
+#' pia
+#' 
+#' @section Filter parameters:
+#' filter
+#' 
+#' @return A netCDF files containing the precipitation rate and accumulation
+#'         for a single radar scan saved under the folder \code{dirOUT}
+#'         with a file name format "precip_YYYYmmddHHMMSS.nc", same time zone as \code{time_zone}.
 #' 
 #' @export
 
@@ -23,7 +44,10 @@ computeQPECAPPI <- function(url, dirOUT,
                             qpe = list(method = "RATE_Z",
                                        pars = list(alpha = 300, beta = 1.4, invCoef = FALSE)),
                             dbz_thres = list(min = 20, max = 65),
-                            apply_cmd = TRUE, pia = NULL, filter = NULL)
+                            apply_cmd = TRUE,
+                            pia = NULL,
+                            filter = NULL,
+                            time_zone = "Africa/Kigali")
 {
     on.exit(curl::handle_reset(handle))
     handle <- curl::new_handle()
@@ -174,10 +198,14 @@ computeQPECAPPI <- function(url, dirOUT,
 
     #######
 
-    start <- strptime(start_time, "%Y-%m-%d %H:%M", tz = "Africa/Kigali")
-    end <- strptime(end_time, "%Y-%m-%d %H:%M", tz = "Africa/Kigali")
+    start <- strptime(start_time, "%Y-%m-%d %H:%M", tz = time_zone)
+    end <- strptime(end_time, "%Y-%m-%d %H:%M", tz = time_zone)
     seqTime <- seq(start, end, "5 min")
-    seqTime <- time_local2utc_char(seqTime, "%Y-%m-%d-%H-%M")
+    if(time_zone == "UTC"){
+        seqTime <- format(seqTime, "%Y-%m-%d-%H-%M")
+    }else{
+        seqTime <- time_local2utc_char(seqTime, "%Y-%m-%d-%H-%M")
+    }
 
     #######
     
@@ -187,7 +215,8 @@ computeQPECAPPI <- function(url, dirOUT,
                      qpe = qpe,
                      dbz_thres = dbz_thres,
                      pia = pia, filter = filter,
-                     apply_cmd = apply_cmd)
+                     apply_cmd = apply_cmd,
+                     time_zone = time_zone)
         args <- jsonlite::toJSON(args, auto_unbox = TRUE)
 
         curl::handle_setopt(handle, copypostfields = args)
@@ -195,13 +224,14 @@ computeQPECAPPI <- function(url, dirOUT,
 
         req <- curl::curl_fetch_memory(url, handle = handle)
         if(req$status_code != 200){
-            msg <- paste("Error occurred, time:", time, "UTC")
+            msg <- paste("Error occurred, time:", time, time_zone)
             cat(msg, "\n")
+            next
         }
 
         dat <- jsonlite::fromJSON(rawToChar(req$content))
         if(length(dat) == 0){
-            msg <- paste("No data, time:", time, "UTC")
+            msg <- paste("No data, time:", time, time_zone)
             cat(msg, "\n")
             next
         }
@@ -218,8 +248,8 @@ computeQPECAPPI <- function(url, dirOUT,
         ncfile <- paste0("precip_", dat$time$format, ".nc")
         ncpath <- file.path(dirOUT, ncfile)
 
-        lon <- ncdf4::ncdim_def("lon", "degrees_east", dat$lon, longname = "Longitude") 
-        lat <- ncdf4::ncdim_def("lat", "degrees_north", dat$lat, longname = "Latitude") 
+        lon <- ncdf4::ncdim_def("lon", "degrees_east", dat$lon, longname = "Longitude")
+        lat <- ncdf4::ncdim_def("lat", "degrees_north", dat$lat, longname = "Latitude")
         time <- ncdf4::ncdim_def("time", dat$time$unit, dat$time$value, unlim = TRUE,
                                  calendar = "standard", longname = "Time")
         rate_ncout <- ncdf4::ncvar_def(dat$qpe$rate$name, dat$qpe$rate$unit, list(lon, lat, time), -99,
@@ -238,6 +268,6 @@ computeQPECAPPI <- function(url, dirOUT,
         ncdf4::ncatt_put(ncout, 0, "title", "Quantitative Precipitation Estimation")
         ncdf4::nc_close(ncout)
 
-        cat(paste("Computing QPE, time:", dat$time$format, "(local) done."), "\n")
+        cat(paste("Computing QPE, time:", dat$time$format, time_zone, "done."), "\n")
     }
 }

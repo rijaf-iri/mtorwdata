@@ -1,6 +1,7 @@
 
 importFrom("utils", "read.table", "write.table")
 importFrom("methods", "as", "slot")
+importFrom("stats", "as.formula", "median", "var")
 
 export(interp_surface_grid)
 export(interp3d_xsec)
@@ -23,3 +24,4 @@ export(deleteUploadDir)
 
 export(awsGetHourlyPrecip)
 export(computeQPECAPPI)
+export(adjustQPE)

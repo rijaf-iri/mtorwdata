@@ -2,39 +2,49 @@
 #'
 #' Aggregate precipitation accumulation from single scan to hourly.
 #' 
-#' @param start_min,end_min start and end time of the period to aggregate with format YYYY-mm-dd HH:MM (local time)
+#' @param start_time,end_time start and end time of the period to aggregate
+#'                   same time zone as \code{time_zone}, format "YYYY-mm-dd HH:MM"
 #' @param dir5MIN full path to the directory containing the single scan NetCDF files
 #' @param dirOUT full path to the directory to save the aggregate data
-#' @param min.frac minimum fraction of non missing values
-#' @param fileprefix prefix of the qpe file names
+#' @param min_frac minimum fraction of non missing values
+#' @param time_zone the time zone of \code{start_time}, \code{end_time},
+#'                  the input and output netCDF files.
+#'                  Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"
+#' @param in_file_prefix prefix of the input file names. Default "qpe_"
+#' @param out_file_prefix prefix of the output file names. Default "precip_"
 #' 
 #' @export
 
-precip_5min2hour <- function(start_min, end_min, dir5MIN,
-                             dirOUT, min.frac = 0.75,
-                             fileprefix = "qpe_")
+precip_5min2hour <- function(start_time, end_time,
+                             dir5MIN, dirOUT,
+                             min_frac = 0.75,
+                             time_zone = "Africa/Kigali",
+                             in_file_prefix = "qpe_",
+                             out_file_prefix = "precip_")
 {
-    start <- strptime(start_min, "%Y-%m-%d %H:%M")
-    end <- strptime(end_min, "%Y-%m-%d %H:%M") + 43200
+    start <- strptime(start_time, "%Y-%m-%d %H:%M", tz = time_zone)
+    end <- strptime(end_time, "%Y-%m-%d %H:%M", tz = time_zone) + 43200
 
     daty <- format(seq(start, end, "day"), "%Y%m%d")
 
     listFiles <- lapply(daty, function(tt){
-        pattern <- paste0(fileprefix, tt, ".+\\.nc$")
+        pattern <- paste0(in_file_prefix, tt, ".+\\.nc$")
         list.files(dir5MIN, pattern)
     })
     listFiles <- do.call(c, listFiles)
     if(length(listFiles) == 0) return(NULL)
 
-    daty <- substr(listFiles, 5, 18)
+    # daty <- substr(listFiles, 5, 18)
+    daty <- gsub(in_file_prefix, "", listFiles)
+    daty <- substr(daty, 1, 14)
     index <- split(seq_along(daty), substr(daty, 1, 10))
     len <- sapply(index, length)
 
-    ifull <- len/12 >= min.frac
+    ifull <- len/12 >= min_frac
     if(all(!ifull)) return(NULL)
 
     odaty <- names(index)
-    ohours <- as.numeric(strptime(odaty, "%Y%m%d%H"))/3600
+    ohours <- as.numeric(strptime(odaty, "%Y%m%d%H", tz = time_zone))/3600
     timeUnit <- "hours since 1970-01-01 00:00:00"
 
     nc <- ncdf4::nc_open(file.path(dir5MIN, listFiles[1]))
@@ -67,7 +77,7 @@ precip_5min2hour <- function(start_min, end_min, dir5MIN,
         grd.ncout <- ncdf4::ncvar_def('precip', 'mm', list(lon, lat, time), -999, prec = 'float',
                                       longname = 'Radar estimated precipitation accumulation',
                                       compression = 6)
-        out.ncfiles <- file.path(dirOUT, paste0(fileprefix, odaty[ix], ".nc"))
+        out.ncfiles <- file.path(dirOUT, paste0(out_file_prefix, odaty[ix], ".nc"))
         ncout <- ncdf4::nc_create(out.ncfiles, grd.ncout)
         ncdf4::ncvar_put(ncout, grd.ncout, precip)
 
@@ -87,33 +97,39 @@ precip_5min2hour <- function(start_min, end_min, dir5MIN,
 #'
 #' Aggregate hourly precipitation to daily.
 #' 
-#' @param start_hour,end_hour start and end time of the period to aggregate with format YYYY-mm-dd-HH in local time
-#' @param dirHour full path to the directory containing the NetCDF files, filename time in "UTC"
+#' @param start_hour,end_hour start and end time of the period to aggregate 
+#'                   same time zone as \code{time_zone}, format "YYYY-mm-dd HH:00"
+#' @param dirHour full path to the directory containing the NetCDF files
 #' @param inFormat format of the input file name. Ex: "precip_adj_\%s\%s\%s\%s.nc"
 #' @param dirOUT full path to the directory to save the aggregate data
 #' @param outFormat format of the output file name. Ex: "precip_adj_\%s\%s\%s.nc"
-#' @param obs.hour observation hour in local time. Default 8h for Rwanda
-#' @param min.frac minimum fraction of non missing values
-#' @param longname long name for the NetCDF variable precip
+#' @param obs_hour observation hour in local time. Default 8h for Rwanda
+#' @param min_frac minimum fraction of non missing values
+#' @param time_zone the time zone of \code{start_time}, \code{end_time} and the input hourly netCDF files.
+#'                 Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"
+#' @param long_name long name for the NetCDF variable precip
 #' 
 #' @export
 
 precip_hour2daily <- function(start_hour, end_hour,
-                              dirHour, inFormat, dirOUT, outFormat,
-                              obs.hour = 8, min.frac = 0.9,
-                              longname = 'Merged AWS-Radar daily rainfall')
+                              dirHour, inFormat,
+                              dirOUT, outFormat,
+                              obs_hour = 8, min_frac = 0.9,
+                              time_zone = "Africa/Kigali",
+                              long_name = 'Merged AWS-Radar daily rainfall'
+                            )
 {
-    formatT <- "%Y-%m-%d-%H"
+    formatT <- "%Y-%m-%d %H:%M"
     frmt <- c('%Y', '%m', '%d', '%H')
     label <- c('year', 'mon', 'day', 'hour')
-    obs.hour <- obs.hour - 2
 
-    start <- strptime(start_hour, formatT, tz = "Africa/Kigali")
-    end <- strptime(end_hour, formatT, tz = "Africa/Kigali")
-    start <- time_local2utc_char(start, formatT)
-    end <- time_local2utc_char(end, formatT)
-    start <- strptime(start, formatT, tz = "UTC")
-    end <- strptime(end, formatT, tz = "UTC")
+    start <- strptime(start_hour, formatT, tz = time_zone)
+    end <- strptime(end_hour, formatT, tz = time_zone)
+
+    if(time_zone == "UTC"){
+        obs_hour <- obs_hour - 2
+    }
+
     start <- lapply(frmt, function(f) format(start, f))
     end <- lapply(frmt, function(f) format(end, f))
     names(start) <- paste('start', label, sep = '.')
@@ -128,10 +144,10 @@ precip_hour2daily <- function(start_hour, end_hour,
     dates <- ncinfo$dates[ncinfo$exist]
     ncPATH <- ncinfo$ncfiles[ncinfo$exist]
 
-    index <- index.minhr2daily(dates, "hourly", obs.hour)
+    index <- index.minhr2daily(dates, "hourly", obs_hour)
     len <- sapply(index, length)
 
-    ifull <- len/24 >= min.frac
+    ifull <- len/24 >= min_frac
     if(all(!ifull)) return(NULL)
 
     odaty <- names(index)
@@ -159,7 +175,7 @@ precip_hour2daily <- function(start_hour, end_hour,
         })
         precip <- do.call(rbind, precip)
 
-        miss <- colSums(!is.na(precip))/24 < min.frac
+        miss <- colSums(!is.na(precip))/24 < min_frac
         if(all(miss)) next
 
         precip <- colSums(precip)
@@ -170,7 +186,7 @@ precip_hour2daily <- function(start_hour, end_hour,
         time <- ncdf4::ncdim_def("time", timeUnit, odays[ix], unlim = TRUE,
                                  calendar = "standard", longname = "Time")
         grd.ncout <- ncdf4::ncvar_def('precip', 'mm', list(lon, lat, time), -999, prec = 'float',
-                                      longname = longname, compression = 6)
+                                      longname = long_name, compression = 6)
         outfrmt <- sprintf(outFormat,
                            substr(odaty[ix], 1, 4),
                            substr(odaty[ix], 5, 6),
@@ -184,7 +200,7 @@ precip_hour2daily <- function(start_hour, end_hour,
         ncdf4::ncatt_put(ncout, "lat", "standard_name", "latitude")
         ncdf4::ncatt_put(ncout, "lat", "axis", "Y")
         ncdf4::ncatt_put(ncout, "time", "axis", "T")
-        ncdf4::ncatt_put(ncout, 0, "description", longname)
+        ncdf4::ncatt_put(ncout, 0, "description", long_name)
         ncdf4::nc_close(ncout)
     }
 
@@ -200,14 +216,16 @@ precip_hour2daily <- function(start_hour, end_hour,
 #' @param inFormat format of the input file name. Ex: "precip_mrg_\%s\%s\%s.nc"
 #' @param dirOUT full path to the directory to save the aggregate data
 #' @param outFormat format of the output file name. Ex: "precip_mrg_\%s\%s.nc"
-#' @param min.frac minimum fraction of non missing values
-#' @param longname long name for the NetCDF variable precip
+#' @param min_frac minimum fraction of non missing values
+#' @param long_name long name for the NetCDF variable precip
 #' 
 #' @export
 
 precip_daily2month <- function(start_day, end_day,
-                               dirDay, inFormat, dirOUT, outFormat, min.frac = 0.9,
-                               longname = 'Merged AWS-Radar monthly rainfall')
+                               dirDay, inFormat,
+                               dirOUT, outFormat,
+                               min_frac = 0.9,
+                               long_name = 'Merged AWS-Radar monthly rainfall')
 {
     frmt <- c('%Y', '%m', '%d')
     label <- c('year', 'mon', 'day')
@@ -234,7 +252,7 @@ precip_daily2month <- function(start_day, end_day,
     odaty <- names(index)
     nbday <- nb.Day.Of.Month(odaty)
 
-    ifull <- len/nbday >= min.frac
+    ifull <- len/nbday >= min_frac
     if(all(!ifull)) return(NULL)
 
     odays <- as.numeric(as.Date(paste0(odaty, "15"), "%Y%m%d"))
@@ -261,7 +279,7 @@ precip_daily2month <- function(start_day, end_day,
         })
         precip <- do.call(rbind, precip)
 
-        miss <- colSums(!is.na(precip))/nbday[ix] < min.frac
+        miss <- colSums(!is.na(precip))/nbday[ix] < min_frac
         if(all(miss)) next
 
         precip <- colSums(precip)
@@ -272,7 +290,7 @@ precip_daily2month <- function(start_day, end_day,
         time <- ncdf4::ncdim_def("time", timeUnit, odays[ix], unlim = TRUE,
                                  calendar = "standard", longname = "Time")
         grd.ncout <- ncdf4::ncvar_def('precip', 'mm', list(lon, lat, time), -999, prec = 'float',
-                                      longname = longname, compression = 6)
+                                      longname = long_name, compression = 6)
         outfrmt <- sprintf(outFormat,
                            substr(odaty[ix], 1, 4),
                            substr(odaty[ix], 5, 6))
@@ -285,7 +303,7 @@ precip_daily2month <- function(start_day, end_day,
         ncdf4::ncatt_put(ncout, "lat", "standard_name", "latitude")
         ncdf4::ncatt_put(ncout, "lat", "axis", "Y")
         ncdf4::ncatt_put(ncout, "time", "axis", "T")
-        ncdf4::ncatt_put(ncout, 0, "description", longname)
+        ncdf4::ncatt_put(ncout, 0, "description", long_name)
         ncdf4::nc_close(ncout)
     }
 

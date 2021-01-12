@@ -5,24 +5,33 @@
 \title{Precipitation aggregation to hourly}
 \usage{
 precip_5min2hour(
-  start_min,
-  end_min,
+  start_time,
+  end_time,
   dir5MIN,
   dirOUT,
-  min.frac = 0.75,
-  fileprefix = "qpe_"
+  min_frac = 0.75,
+  time_zone = "Africa/Kigali",
+  in_file_prefix = "qpe_",
+  out_file_prefix = "precip_"
 )
 }
 \arguments{
-\item{start_min, end_min}{start and end time of the period to aggregate with format YYYY-mm-dd HH:MM (local time)}
+\item{start_time, end_time}{start and end time of the period to aggregate
+same time zone as \code{time_zone}, format "YYYY-mm-dd HH:MM"}
 
 \item{dir5MIN}{full path to the directory containing the single scan NetCDF files}
 
 \item{dirOUT}{full path to the directory to save the aggregate data}
 
-\item{min.frac}{minimum fraction of non missing values}
+\item{min_frac}{minimum fraction of non missing values}
 
-\item{fileprefix}{prefix of the qpe file names}
+\item{time_zone}{the time zone of \code{start_time}, \code{end_time},
+the input and output netCDF files.
+Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"}
+
+\item{in_file_prefix}{prefix of the input file names. Default "qpe_"}
+
+\item{out_file_prefix}{prefix of the output file names. Default "precip_"}
 }
 \description{
 Aggregate precipitation accumulation from single scan to hourly.

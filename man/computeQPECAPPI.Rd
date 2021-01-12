@@ -15,30 +15,61 @@ computeQPECAPPI(
   dbz_thres = list(min = 20, max = 65),
   apply_cmd = TRUE,
   pia = NULL,
-  filter = NULL
+  filter = NULL,
+  time_zone = "Africa/Kigali"
 )
 }
 \arguments{
-\item{url}{the URL of the server. Ex: "http://192.168.1.10:8080"}
+\item{url}{The URL of the server. Ex: "http://192.168.1.10:8080"}
 
-\item{dirOUT}{full path to the directory to save the output}
+\item{dirOUT}{Full path to the directory to save the output}
 
-\item{start_time}{start time (in local time), format "yyyy-mm-dd HH:MM"}
+\item{start_time, end_time}{The start and end time same time zone as \code{time_zone}, format "YYYY-mm-dd HH:MM"}
 
-\item{end_time}{end time (in local time), format "yyyy-mm-dd HH:MM"}
+\item{cappi}{A named list of parameters to be used to create the CAPPI.}
 
-\item{cappi}{a list of parameters to be used to create the CAPPI}
+\item{qpe}{A named list of parameters to be used to compute the precipitation rate.}
 
-\item{qpe}{a list of parameters to be used to compute the precipitation rate}
+\item{dbz_thres}{A named list of the minimum and maximum reflectivity threshold.
+Default \code{dbz_thres = list(min = 20, max = 65)}}
 
-\item{dbz_thres}{a list of the minimum and maximum reflectivity threshold}
+\item{apply_cmd}{Logical, apply clutter mitigation decision to the fields to use to compute the QPE.
+Default \code{TRUE}, applying CMD.}
 
-\item{apply_cmd}{logical, apply clutter mitigation decision}
+\item{pia}{A named list of parameters to be used to correct the attenuation.
+Default \code{NULL}, no correction performed.}
 
-\item{pia}{a list of parameters to be used to correct the attenuation. NULL no correction performed.}
+\item{filter}{A named list of parameters to be used to filter the data.
+Default \code{NULL}, no filtering applied.}
 
-\item{filter}{a list of parameters to be used to filter the data. NULL no filtering applied.}
+\item{time_zone}{the time zone of \code{start_time}, \code{end_time} and the output QPE.
+Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"}
+}
+\value{
+A netCDF files containing the precipitation rate and accumulation
+        for a single radar scan saved under the folder \code{dirOUT}
+        with a file name format "precip_YYYYmmddHHMMSS.nc", same time zone as \code{time_zone}.
 }
 \description{
 Compute QPE from CAPPI for single scan radar polar data.
 }
+\section{CAPPI parameters}{
+
+cappi
+}
+
+\section{QPE parameters}{
+
+qpe
+}
+
+\section{Attenuation correction parameters}{
+
+pia
+}
+
+\section{Filter parameters}{
+
+filter
+}
+

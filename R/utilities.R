@@ -136,3 +136,57 @@ createBlock <- function(cellsize, fac = 0.5, len = 4){
     bGrd <- expand.grid(x = dBX, y = dBY)
     return(bGrd)
 }
+
+##################
+
+getNeighboursIndex <- function(gridObj, points, padxy){
+    nxy <- gridObj@grid@cellsize
+    padx <- padxy[1]
+    pady <- padxy[2]
+
+    voisin <- lapply(seq(nrow(points)), function(j){
+                    xx <- points[j, 2] + nxy[1] * (-padx:padx)
+                    yy <- points[j, 3] + nxy[2] * (-pady:pady)
+                    if(length(xx) > 1 | length(yy) > 1){
+                        xy <- defSpatialPixels(list(lon = xx, lat = yy))
+                    }else{
+                        xy <- data.frame(lon = xx, lat = yy)
+                        sp::coordinates(xy) <- ~lon+lat
+                    }
+                    return(xy)
+                })
+    ij2xtr <- lapply(voisin, sp::over, y = gridObj)
+    na_pts <- sapply(ij2xtr, function(x) !any(!is.na(x)))
+    if(all(na_pts)) return(NULL)
+
+    list(headinfo = points, ij2xtr = ij2xtr)
+}
+
+##################
+
+extractQPEatAWS <- function(ijGRD, qpe, aws, fun = 'mean'){
+    # fun <- match.fun(fun)
+    fun <- get(fun, mode = "function")
+
+    ij2xtr <- lapply(ijGRD$ij2xtr, function(x) x[!is.na(x)])
+    nonZero <- sapply(ij2xtr, length) > 0
+    ij2xtr <- ij2xtr[nonZero]
+
+    extdat <- sapply(ij2xtr, function(ij){
+        mat <- qpe[ij]
+        if(length(ij) > 1)
+            mat <- fun(mat, na.rm = TRUE)
+        return(mat)
+    })
+
+    if(!all(nonZero)){
+        tmp <- rep(NA, length(nonZero))
+        tmp[nonZero] <- extdat
+        extdat <- tmp
+    }
+    out <- cbind(ijGRD$headinfo, aws, extdat)
+    names(out) <- c("id", "lon", "lat", "aws", "qpe")
+    sp::coordinates(out) <- c("lon", "lat")
+
+    return(out)
+}
