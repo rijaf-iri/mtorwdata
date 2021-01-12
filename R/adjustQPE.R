@@ -158,17 +158,17 @@ adjustQPE <- function(start_time, end_time, aws_data, qpe_data, qpe_adjust,
         }
 
         qpe_adj[is.na(qpe_adj)] <- -99
-        dim(precip) <- c(nlon, nlat, 1)
+        dim(qpe_adj) <- c(nlon, nlat, 1)
 
         time <- ncdf4::ncdim_def("time", "seconds since 1970-01-01 00:00:00",
                                  as.numeric(seqTime[jj]), unlim = TRUE,
                                  calendar = "standard", longname = "Time")
-        precip_ncout <- ncdf4::ncvar_def("precip", "mm", list(nclon, nclat, time), -99,
-                                         prec = 'float', compression = 6,
-                                         longname = paste("Adjusted QPE using", pars_adjust$method, "method"))
+        precip <- ncdf4::ncvar_def("precip", "mm", list(nclon, nclat, time), -99,
+                                    prec = 'float', compression = 6,
+                                    longname = paste("Adjusted QPE using", pars_adjust$method, "method"))
 
-        ncout <- ncdf4::nc_create(ncpathOut[jj], precip_ncout)
-        ncdf4::ncvar_put(ncout, precip_ncout, qpe_adj)
+        ncout <- ncdf4::nc_create(ncpathOut[jj], precip)
+        ncdf4::ncvar_put(ncout, precip, qpe_adj)
 
         ncdf4::ncatt_put(ncout, "lon", "axis", "X")
         ncdf4::ncatt_put(ncout, "lat", "axis", "Y")
