@@ -165,6 +165,31 @@ extractRadarPolar <- function(url, source,
 }
 
 
+#' Convert to table extracted radar polar data.
+#'
+#' Convert to table extracted radar polar data.
+#' 
+#' @param x A named list, output from \code{extractRadarPolar}.
+#' 
+#' @return A data.frame
+#' 
+#' @export
+
+polarExtractedTable <- function(x){
+    tab <- expand.grid(dates = x$date, 
+                       elevation_angle = x$elevation_angle,
+                       points_id = x$coords$id)
+    icrd <- match(tab$points_id, points$id)
+    tab$points_longitude <- points$longitude[icrd]
+    tab$points_latitude <- points$latitude[icrd]
+    tab <- tab[, c(3:5, 1:2)]
+
+    for(nm in names(x$data))
+        tab[[nm]] <- c(x$data[[nm]])
+
+    return(tab)
+}
+
 
 
 
