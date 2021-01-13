@@ -214,7 +214,8 @@ computeQPECAPPI <- function(url, dirOUT,
                      cappi = cappi,
                      qpe = qpe,
                      dbz_thres = dbz_thres,
-                     pia = pia, filter = filter,
+                     pia = pia,
+                     filter = filter,
                      apply_cmd = apply_cmd,
                      time_zone = time_zone)
         args <- jsonlite::toJSON(args, auto_unbox = TRUE)
