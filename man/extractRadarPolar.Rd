@@ -2,7 +2,7 @@
 % Please edit documentation in R/extractRadarPolar.R
 \name{extractRadarPolar}
 \alias{extractRadarPolar}
-\title{Compute QPE from CAPPI.}
+\title{Extract radar polar data.}
 \usage{
 extractRadarPolar(
   url,
@@ -58,5 +58,5 @@ A named list
             dimension: (len(date) x len(elevation_angle) x len(points))
 }
 \description{
-Compute QPE from CAPPI for single scan radar polar data.
+Extract radar polar data over a set of points.
 }

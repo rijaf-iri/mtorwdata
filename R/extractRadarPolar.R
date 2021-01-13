@@ -1,7 +1,7 @@
 
-#' Compute QPE from CAPPI.
+#' Extract radar polar data.
 #'
-#' Compute QPE from CAPPI for single scan radar polar data.
+#' Extract radar polar data over a set of points.
 #' 
 #' @param url The URL of the server. Ex: "http://192.168.1.10:8080"
 #' @param source A partial path of the directory containing the folders dates of the mdv files.
