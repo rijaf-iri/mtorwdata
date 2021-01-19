@@ -9,7 +9,7 @@
 #' @param start_time,end_time The start and end time same time zone as \code{time_zone}, format "YYYY-mm-dd HH:MM"
 #' @param fields Vector of the fields to extract.
 #' @param points A data frame of the points to extract. Data frame with column names "id", "longitude" and "latitude"
-#' @param sweeps A vector of the elevation angles to be extracted in integer, or -1 to extract all available elevation angles
+#' @param sweeps A vector of the index of elevation angles to be extracted in integer, or -1 to extract all available elevation angles
 #' @param pia A named list of of the method and parameters to use to perform an attenuation correction for the reflectivity fields before extraction.
 #'            Default \code{NULL}, no attenuation correction performed. 
 #' @param dbz_fields A vector of reflectivity fields to correct the attenuation. Must be in \code{fields}. Default \code{NULL}
@@ -21,10 +21,10 @@
 #'                 Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"
 #' 
 #' @return A named list
-#'         points: the original points used to extract the data
+#'        points: the original points used to extract the data
 #'        date: list of dates of the extracted data
 #'        elevation_angle: list of the elevation angles of the extracted data
-#'        data: dictionary of longitude, latitude, altitude and the fields in the form of 3d list
+#'        data: list of longitude, latitude, altitude and the fields in the form of 3d array
 #'             dimension: (len(date) x len(elevation_angle) x len(points))
 #' 
 #' @export
@@ -179,9 +179,9 @@ polarExtractedTable <- function(x){
     tab <- expand.grid(dates = x$date, 
                        elevation_angle = x$elevation_angle,
                        points_id = x$coords$id)
-    icrd <- match(tab$points_id, points$id)
-    tab$points_longitude <- points$longitude[icrd]
-    tab$points_latitude <- points$latitude[icrd]
+    icrd <- match(tab$points_id, x$coords$id)
+    tab$points_longitude <- x$coords$longitude[icrd]
+    tab$points_latitude <- x$coords$latitude[icrd]
     tab <- tab[, c(3:5, 1:2)]
 
     for(nm in names(x$data))
@@ -189,7 +189,3 @@ polarExtractedTable <- function(x){
 
     return(tab)
 }
-
-
-
-
