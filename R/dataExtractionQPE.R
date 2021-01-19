@@ -94,9 +94,10 @@ extractQPE <- function(dirQPE, dirDOWN, timestep, timerange, geom, min_frac = 1.
 #####################
 
 extractQPEnc <- function(timestep, timerange, dirQPE, ncInfo,
-                         dirOUT, geomObj, min_frac = 1.0)
+                         dirOUT, geomObj, min_frac = 1.0,
+                         tz_local = TRUE)
 {
-    ncdata <- get_qpe_ncdata_files(timestep, timerange, dirQPE, ncInfo)
+    ncdata <- get_qpe_ncdata_files(timestep, timerange, dirQPE, ncInfo, tz_local)
     if(is.null(ncdata)) return(NULL)
 
     daty <- ncdata$date
@@ -284,7 +285,7 @@ extractQPEnc <- function(timestep, timerange, dirQPE, ncInfo,
 
 #####################
 
-get_qpe_ncdata_files <- function(timestep, timerange, dirQPE, ncInfo){
+get_qpe_ncdata_files <- function(timestep, timerange, dirQPE, ncInfo, tz_local = TRUE){
     dirDAT <- file.path(dirQPE, ncInfo[1])
 
     timeR <- lapply(timerange, strsplit, split = "-")
@@ -421,7 +422,11 @@ get_qpe_ncdata_files <- function(timestep, timerange, dirQPE, ncInfo){
                     )
         ## minute and hourly convert to Kigali time
         if(timestep %in% c("minute", "hourly")){
-            daty <- time_utc2local_char(times, frmt)
+            if(tz_local){
+                daty <- time_utc2local_char(times, frmt)
+            }else{
+                daty <- format(times, frmt)
+            }
         }else{
             daty <- format(times, frmt)
         }

@@ -37,7 +37,6 @@ extractQPEData <- function(start_time, end_time,
         names(points) <- c('id', 'x', 'y')
         geomObj <- list(type = "points", points = points, padxy = padxy)
     }else{
-        shapefiles="/Users/rijaf/Desktop/untitled.css"
         dsn <- dirname(shapefiles)
         layer <- tools::file_path_sans_ext(basename(shapefiles))
         shpf <- rgdal::readOGR(dsn = dsn, layer = layer, verbose = FALSE)
@@ -76,7 +75,8 @@ extractQPEData <- function(start_time, end_time,
                           end = format(end, "%Y-%m-%d-%H"))
     }
 
-    ret <- extractQPEnc(timestep, timerange, qpe_dir, ncInfo, dirOUT, geomObj)
+    ret <- extractQPEnc(timestep, timerange, qpe_dir, ncInfo, dirOUT, geomObj, tz_local = FALSE)
 
     return(ret)
 }
+
