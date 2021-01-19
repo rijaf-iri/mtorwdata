@@ -304,7 +304,8 @@ get_qpe_ncdata_files <- function(timestep, timerange, dirQPE, ncInfo){
         })
         ncfiles <- do.call(c, ncfiles)
         if(length(ncfiles) == 0) return(NULL)
-        daty <- substr(ncfiles, 5, 18)
+        # daty <- substr(ncfiles, 5, 18)
+        daty <- gsub("[^[:digit:]]", "", ncfiles)
         times <- strptime(daty, "%Y%m%d%H%M%S", tz = "UTC")
     }
 

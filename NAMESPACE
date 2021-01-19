@@ -31,3 +31,5 @@ export(polarExtractedTable)
 export(extract_3DGridData)
 export(extractRadarGrid)
 export(gridExtractedTable)
+
+export(extractQPEData)

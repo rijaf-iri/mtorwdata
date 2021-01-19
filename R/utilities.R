@@ -165,7 +165,6 @@ getNeighboursIndex <- function(gridObj, points, padxy){
 ##################
 
 extractQPEatAWS <- function(ijGRD, qpe, aws, fun = 'mean'){
-    # fun <- match.fun(fun)
     fun <- get(fun, mode = "function")
 
     ij2xtr <- lapply(ijGRD$ij2xtr, function(x) x[!is.na(x)])
