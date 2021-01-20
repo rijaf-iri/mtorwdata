@@ -10,7 +10,7 @@
 #' @param fields Vector of the fields to extract.
 #' @param points A data frame of the points to extract. Data frame with column names "id", "longitude" and "latitude"
 #' @param levels A vector of the index of altitudes to be extracted in integer, or -1 to extract all available altitude
-#' @param padxyz A vector of the padding to use, in order "lon", "lat", "alt"
+#' @param padxyz A vector of the padding to use in number of pixels, in order "lon", "lat", "alt"
 #' @param fun_sp Character, function to be used for the padding. Options: "mean", "median", "max", "min"
 #' @param time_zone the time zone of \code{start_time}, \code{end_time} and the output QPE.
 #'                 Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"

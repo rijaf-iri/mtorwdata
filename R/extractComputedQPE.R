@@ -10,7 +10,7 @@
 #'                    For QPE from single scan, must have 6 "\%s" and 4 "\%s" for hourly data
 #' @param extr_type The extraction support, "points" or "shapefiles"
 #' @param points A data frame of the points to extract. Data frame with column names "id", "longitude" and "latitude"
-#' @param padxy If \code{extr_type} is "points", a vector of the padding to use, in order "lon", "lat".
+#' @param padxy If \code{extr_type} is "points", a vector of the padding to use in number of pixels, in order "lon", "lat".
 #'              Default c(0, 0), no padding applied.
 #' @param shapefiles If \code{extr_type} is "shapefiles", full path to the shapefiles (with the extension ".shp") to use to extract the data
 #' @param shp_attr_name If \code{extr_type} is "shapefiles", attribute to be used to extract the data
@@ -32,9 +32,10 @@ extractQPEData <- function(start_time, end_time,
                            shp_attr_values = NULL,
                            sp_average = TRUE)
 {
-
     if(extr_type == 'points'){
         names(points) <- c('id', 'x', 'y')
+        ## pixel size 0.0045 degree ~ 500 m
+        padxy <- padxy * 0.0045
         geomObj <- list(type = "points", points = points, padxy = padxy)
     }else{
         dsn <- dirname(shapefiles)

@@ -24,7 +24,7 @@ single scan format "YYYY-mm-dd HH:MM", hourly format "YYYY-mm-dd HH:00"}
 
 \item{points}{A data frame of the points to extract. Data frame with column names "id", "longitude" and "latitude"}
 
-\item{padxy}{A vector of the padding to use, in order "lon", "lat".
+\item{padxy}{A vector of the padding to use in number of pixels, in order "lon", "lat".
 Default c(0, 0), no padding applied.}
 
 \item{fun_sp}{Character, function to be used for the padding. Options: "mean", "median", "max", "min"

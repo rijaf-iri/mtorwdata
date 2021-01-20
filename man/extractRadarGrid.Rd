@@ -31,7 +31,7 @@ Ex: "radarCart/ops", "ctrec" or "radarCart/echo_tops"}
 
 \item{levels}{A vector of the index of altitudes to be extracted in integer, or -1 to extract all available altitude}
 
-\item{padxyz}{A vector of the padding to use, in order "lon", "lat", "alt"}
+\item{padxyz}{A vector of the padding to use in number of pixels, in order "lon", "lat", "alt"}
 
 \item{fun_sp}{Character, function to be used for the padding. Options: "mean", "median", "max", "min"}
 

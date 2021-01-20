@@ -34,7 +34,7 @@ For QPE from single scan, must have 6 "\%s" and 4 "\%s" for hourly data}
 
 \item{points}{A data frame of the points to extract. Data frame with column names "id", "longitude" and "latitude"}
 
-\item{padxy}{If \code{extr_type} is "points", a vector of the padding to use, in order "lon", "lat".
+\item{padxy}{If \code{extr_type} is "points", a vector of the padding to use in number of pixels, in order "lon", "lat".
 Default c(0, 0), no padding applied.}
 
 \item{shapefiles}{If \code{extr_type} is "shapefiles", full path to the shapefiles (with the extension ".shp") to use to extract the data}
