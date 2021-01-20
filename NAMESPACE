@@ -33,3 +33,4 @@ export(extractRadarGrid)
 export(gridExtractedTable)
 
 export(extractQPEData)
+export(createCAPPI)
