@@ -34,3 +34,4 @@ export(gridExtractedTable)
 
 export(extractQPEData)
 export(createCAPPI)
+export(extractCAPPI)
