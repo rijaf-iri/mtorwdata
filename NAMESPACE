@@ -26,6 +26,7 @@ export(awsGetHourlyPrecip)
 export(computeQPECAPPI)
 export(adjustQPE)
 export(extractRadarPolar)
+export(extract_3DPolarData)
 export(polarExtractedTable)
 
 export(extract_3DGridData)
