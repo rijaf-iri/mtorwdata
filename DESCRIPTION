@@ -22,4 +22,5 @@ Imports:
     reshape2,
     methods,
     curl,
+    matrixStats,
 RoxygenNote: 7.1.1

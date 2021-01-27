@@ -3,55 +3,62 @@
 #' Adjust hourly QPE using AWS data.
 #' 
 #' @param start_time,end_time The start and end time same time zone as \code{time_zone}, format "YYYY-mm-dd HH:MM"
-#' @param aws_data aws data obtained from \code{awsGetHourlyPrecip}
+#' @param aws_data aws data obtained from \code{awsGetHourlyPrecip} \cr
 #'                 A named list of coordinates (list name "coords"), dates (list name "date") and the data (list name "data")
-#'                 coordinates: a data.frame with column names "id", "longitude" and "latitude"
-#'                 dates: a vector of dates in the format "YYYYmmddHH" in local time
-#'                 data: a matrix with row number equals to the length of dates and column number equals to the length of coordinates
+#'                 \itemize{
+#'                   \item{\strong{coordinates}: }{a data.frame with column names "id", "longitude" and "latitude"}
+#'                   \item{\strong{dates}: }{a vector of dates in the format "YYYYmmddHH" in local time}
+#'                   \item{\strong{data}: }{a matrix with row number equals to the length of dates and column number equals to the length of coordinates}
+#'                 }
 #'                 Ex: list(coords = data.frame(id , longitude, latitude), date = vector, data = matrix(nrow = length(date), ncol = nrow(coords)))
-#' @param qpe_data named list, directory containing the input netCDF files and the format of the netCDT file names
+#' @param qpe_data named list, directory containing the input netCDF files and the format of the netCDT file names \cr
 #'                 Ex: list(dir = "directory/full/path", format = "precip_\%s\%s\%s\%s.nc")
-#' @param qpe_adjust named list, directory to save the adjusted QPE and the format of the netCDT file names
+#' @param qpe_adjust named list, directory to save the adjusted QPE and the format of the netCDT file names \cr
 #'                   Ex: list(dir = "directory/full/path", format = "precip_adj_\%s\%s\%s\%s.nc")
-#' @param pars_adjust named list of the method to be used (list name "method") and other parameters for the adjustment and interpolation (list name "pars").
-#'                    The available methods are "Additive", "Multiplicative", "Mixed", "MeanFieldBias" or "KED".
-#'                    "Additive": adjustment using an additive error model.
-#'                                Default list(method = "Additive").
-#'                                \code{pars} can be omitted or list of arguments
-#'                                to be passed to the function \code{krige} of the package \code{gstat}
-#'                                Ex: list(method = "Additive", pars = list(nmin = 3, nmax = 8))
-#'                    "Multiplicative": adjustment using a multiplicative error model.
-#'                                \code{pars} can be omitted or list of arguments
-#'                                to be passed to the function \code{krige} of the package \code{gstat}
-#'                                 Ex: list(method = "Multiplicative", pars = list(nmin = 3, nmax = 8))
-#'                    "Mixed": adjustment using a mixed (additive and multiplicative) error model.
-#'                                \code{pars} can be omitted or list of arguments
-#'                                to be passed to the function \code{krige} of the package \code{gstat}
-#'                                 Ex: list(method = "Mixed", pars = list(nmin = 3, nmax = 8))
-#'                    "MeanFieldBias": adjustment using one correction factor for the entire domain (Mean Field Bias correction).
-#'                                     If \code{pars} is omitted the default is list(method = "linear", minslope = 0.1, minr = 0.5, maxp = 0.01)
-#'                                     \code{pars} has the following items:
-#'                                     "method": the method used to compute the mean bias fields. Options are "linear", "mean", "median"
-#'                                     When using method = "linear" three additional parameters are needed.
-#'                                     "minslope": minimum allowable slope
-#'                                     "minr": minimum allowable correlation
-#'                                     "maxp": maximim allowable p-value
-#'                                  Ex: list(method = "MeanFieldBias", pars = list(method = "median"))
-#'                  "KED": adjustment using a Kriging with external drift.
-#'                       \code{pars} can be omitted or contains a vector candidates of variogram to be fitted to the data, list(models = c("Sph", "Exp", "Gau"))
-#'                      Ex: list(method = "KED", pars = list(models = c("Sph", "Exp", "Gau"), nmin = 3, nmax = 8))
+#' @param pars_adjust named list of the method to be used (list name "method") and other parameters for the adjustment and interpolation (list name "pars"). \cr
+#'                   The available methods are "Additive", "Multiplicative", "Mixed", "MeanFieldBias" or "KED".
+#'                  \itemize{
+#'                    \item{\strong{"Additive"}: }{adjustment using an additive error model. \cr
+#'                                Default list(method = "Additive"). \cr
+#'                                \code{pars} can be omitted or list of arguments \cr
+#'                                to be passed to the function \code{krige} of the package \code{gstat} \cr
+#'                                Ex: list(method = "Additive", pars = list(nmin = 3, nmax = 8)) }
+#'                    \item{\strong{"Multiplicative"}: }{adjustment using a multiplicative error model. \cr
+#'                                \code{pars} can be omitted or list of arguments \cr
+#'                                to be passed to the function \code{krige} of the package \code{gstat} \cr
+#'                                 Ex: list(method = "Multiplicative", pars = list(nmin = 3, nmax = 8)) }
+#'                    \item{\strong{"Mixed"}: }{adjustment using a mixed (additive and multiplicative) error model. \cr
+#'                                \code{pars} can be omitted or list of arguments \cr
+#'                                to be passed to the function \code{krige} of the package \code{gstat} \cr
+#'                                 Ex: list(method = "Mixed", pars = list(nmin = 3, nmax = 8)) }
+#'                    \item{\strong{"MeanFieldBias"}: }{adjustment using one correction factor for the entire domain (Mean Field Bias correction). \cr
+#'                                     If \code{pars} is omitted the default is list(method = "linear", minslope = 0.1, minr = 0.5, maxp = 0.01) \cr
+#'                                     \code{pars} has the following items: \cr
+#'                                     "method": the method used to compute the mean bias fields. Options are "linear", "mean", "median" \cr
+#'                                     When using method = "linear" three additional parameters are needed. \cr
+#'                                     "minslope": minimum allowable slope \cr
+#'                                     "minr": minimum allowable correlation \cr
+#'                                     "maxp": maximim allowable p-value \cr
+#'                                  Ex: list(method = "MeanFieldBias", pars = list(method = "median")) }
+#'                  \item{\strong{"KED"}: }{adjustment using a Kriging with external drift. \cr
+#'                       \code{pars} can be omitted or contains a vector candidates of variogram to be fitted to the data, list(models = c("Sph", "Exp", "Gau")) \cr
+#'                          Ex: list(method = "KED", pars = list(models = c("Sph", "Exp", "Gau"), nmin = 3, nmax = 8))
+#'                       }
+#'                }
 #' @param padxy  vector of length 2 representing the number of pixels to be extracted, then aggregated, to get the value of the target pixel.
-#'              first element: number of pixels to the left and to the right
-#'              second element: number of pixels above and and below
-#' @param fun_sp_aggr character, function to be used to aggregate the values of the matched pixels from \code{padxy}.
+#'              \itemize{
+#'                 \item{first element: }{number of pixels to the left and to the right}
+#'                 \item{second element: }{number of pixels above and and below}
+#'              }
+#' @param fun_sp_aggr character, function to be used to aggregate the values of the matched pixels from \code{padxy}. \cr
 #'                      Ex: "mean" or "median". Default "median".
 #' @param min_aws minimum number of AWS. If the number of AWS with non missing values is less than \code{min_aws},
 #'                 no adjustment will be performed.
-#' @param min_val minimum value. Only the value greater or equal to \code{min_val} will be used.
+#' @param min_val minimum value. Only the value greater or equal to \code{min_val} will be used. \cr
 #'               For the \code{Additive} and \code{KED} can be 0, otherwise it must be greater than 0
-#' @param time_zone the time zone of \code{start_time}, \code{end_time}, the input and output QPE.
+#' @param time_zone the time zone of \code{start_time}, \code{end_time}, the input and output QPE. \cr
 #'                  Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"
-#' @param ncInfo named list, order of the longitude and latitude dimension in the input netCDF data and the name of the variable.
+#' @param ncInfo named list, order of the longitude and latitude dimension in the input netCDF data and the name of the variable. \cr
 #'              Default list(ilon = 1, ilat = 2, varid = "precip")
 #' 
 #' @export

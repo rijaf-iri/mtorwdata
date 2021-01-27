@@ -36,3 +36,9 @@ export(gridExtractedTable)
 export(extractQPEData)
 export(createCAPPI)
 export(extractCAPPI)
+
+export(stats_continuous)
+export(stats_categorical)
+export(stats_volumetric_quantile)
+
+
