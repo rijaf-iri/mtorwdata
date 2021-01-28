@@ -14,7 +14,7 @@ extractGeomPoints(gridObj, points, padxy)
 \item{padxy}{c(padx, pady) in decimal degree}
 }
 \value{
-list
+A list object
 }
 \description{
 Geom points extraction.

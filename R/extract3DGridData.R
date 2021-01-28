@@ -11,8 +11,8 @@
 #' @param padxyz A vector of the padding to use in number of pixels, in order "lon", "lat", "alt"
 #' @param fun_sp Character, function to be used for the padding. Options: "mean", "median", "max", "min"
 #' 
-#' @return A named list
-#'         List of matrix of the extracted data over the set of points.
+#' @return A named list \cr
+#'         List of matrix of the extracted data over the set of points. \cr
 #'         The row represents the set of points and the column for the levels.
 #' 
 #' @export

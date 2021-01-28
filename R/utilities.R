@@ -189,3 +189,12 @@ extractQPEatAWS <- function(ijGRD, qpe, aws, fun = 'mean'){
 
     return(out)
 }
+
+##################
+
+convert_data_type <- function(mat, as.fun){
+    dim.mat <- dim(mat)
+    mat <- as.fun(mat)
+    dim(mat) <- dim.mat
+    return(mat)
+}

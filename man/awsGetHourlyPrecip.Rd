@@ -14,7 +14,12 @@ awsGetHourlyPrecip(start_time, end_time, url)
 \item{url}{the URL of the server. Ex: "http://192.168.1.10:8080"}
 }
 \value{
-a list object
+A named list of coordinates (list name "coords"), dates (list name "date") and the data (list name "data")
+        \itemize{
+           \item{\strong{coordinates}: }{a data.frame with column names "id", "longitude" and "latitude"}
+           \item{\strong{dates}: }{a vector of dates in the format "YYYYmmddHH" in local time}
+           \item{\strong{data}: }{a matrix with row number equals to the length of dates and column number equals to the length of coordinates}
+         }
 }
 \description{
 Get hourly precipitation data for all AWS.

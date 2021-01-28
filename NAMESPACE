@@ -23,6 +23,8 @@ export(extractGeomRect)
 export(deleteUploadDir)
 
 export(awsGetHourlyPrecip)
+export(awsWriteHourlyPrecip2CDT)
+
 export(computeQPECAPPI)
 export(adjustQPE)
 export(extractRadarPolar)
@@ -41,4 +43,4 @@ export(stats_continuous)
 export(stats_categorical)
 export(stats_volumetric_quantile)
 
-
+export(readCDTStationFormat)

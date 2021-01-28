@@ -40,11 +40,13 @@ Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"}
 }
 \value{
 A named list
-       points: the original points used to extract the data
-       date: list of dates of the extracted data
-       altitude: list of the altitudes of the extracted data
-       data: list of the fields in the form of 3d array
-            dimension: (len(date) x len(altitude) x len(points))
+  \itemize{
+    \item{\strong{points}: }{the original points used to extract the data}
+    \item{\strong{date}: }{list of dates of the extracted data}
+    \item{\strong{altitude}: }{list of the altitudes of the extracted data}
+    \item{\strong{data}: }{list of the fields in the form of 3d array. \cr
+            Dimension: (length(date) x length(altitude) x length(points))}
+  }
 }
 \description{
 Extract radar Cartesian data over a set of points.

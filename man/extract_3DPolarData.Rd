@@ -32,8 +32,8 @@ with names "x", "y", "z", "lon" and "lat"}
 \item{maxdist}{The maximum radius of influence in meters for the interpolation.}
 }
 \value{
-A named list
-        List of matrix of the extracted data over the set of points.
+A named list \cr
+        List of matrix of the extracted data over the set of points. \cr
         The row represents the set of points and the column for the heights.
 }
 \description{

@@ -6,7 +6,12 @@
 #' @param end_time end time, format "YYYY-mm-dd HH:00"
 #' @param url the URL of the server. Ex: "http://192.168.1.10:8080"
 #' 
-#' @return a list object
+#' @return A named list of coordinates (list name "coords"), dates (list name "date") and the data (list name "data")
+#'         \itemize{
+#'            \item{\strong{coordinates}: }{a data.frame with column names "id", "longitude" and "latitude"}
+#'            \item{\strong{dates}: }{a vector of dates in the format "YYYYmmddHH" in local time}
+#'            \item{\strong{data}: }{a matrix with row number equals to the length of dates and column number equals to the length of coordinates}
+#'          }
 #' 
 #' @export
 
@@ -25,4 +30,23 @@ awsGetHourlyPrecip <- function(start_time, end_time, url){
 
     out <- jsonlite::fromJSON(rawToChar(req$content))
     return(out)
+}
+
+#' Write hourly precipitation data to CDT format.
+#'
+#' Write hourly precipitation data to CDT format.
+#' 
+#' @param aws_data Hourly precipitation data output from \code{awsGetHourlyPrecip}
+#' @param csvfile Full path to the CSV file to save the CDT format data
+#' 
+#' @export
+
+awsWriteHourlyPrecip2CDT <- function(aws_data, csvfile){
+    dhead <- cbind(c("ID", "LON", "LAT"), t(aws_data$coords))
+    don <- cbind(aws_data$date, aws_data$data)
+    don <- cbind(t(dhead), t(don))
+    don <- t(don)
+
+    write.table(don, csvfile, sep = ",", na = "-99", quote = FALSE,
+                row.names = FALSE, col.names = FALSE)
 }

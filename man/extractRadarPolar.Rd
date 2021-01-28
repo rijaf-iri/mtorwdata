@@ -23,7 +23,7 @@ extractRadarPolar(
 \arguments{
 \item{url}{The URL of the server. Ex: "http://192.168.1.10:8080"}
 
-\item{source}{A partial path of the directory containing the folders dates of the mdv files.
+\item{source}{A partial path of the directory containing the folders dates of the mdv files. \cr
 Ex: "radarPolar/derived/sur", "radarPolar/ops1/sur" or "radarPolar/ws/sur"}
 
 \item{start_time, end_time}{The start and end time same time zone as \code{time_zone}, format "YYYY-mm-dd HH:MM"}
@@ -51,11 +51,13 @@ Options: "Africa/Kigali" or "UTC". Default "Africa/Kigali"}
 }
 \value{
 A named list
-       points: the original points used to extract the data
-       date: list of dates of the extracted data
-       elevation_angle: list of the elevation angles of the extracted data
-       data: list of longitude, latitude, altitude and the fields in the form of 3d array
-            dimension: (len(date) x len(elevation_angle) x len(points))
+\itemize{
+ \item{\strong{points}: }{the original points used to extract the data}
+ \item{\strong{date}: }{list of dates of the extracted data}
+ \item{\strong{elevation_angle}: }{list of the elevation angles of the extracted data}
+ \item{\strong{data}: }{list of longitude, latitude, altitude and the fields in the form of 3d array.\cr
+            Dimension: (length(date) x length(elevation_angle) x length(points))}
+}
 }
 \description{
 Extract radar polar data over a set of points.

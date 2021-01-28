@@ -13,8 +13,8 @@
 #' @param fun_sp Character, function to be used for the padding. Options: "mean", "median", "max", "min"
 #' @param maxdist The maximum radius of influence in meters for the interpolation. 
 #' 
-#' @return A named list
-#'         List of matrix of the extracted data over the set of points.
+#' @return A named list \cr
+#'         List of matrix of the extracted data over the set of points. \cr
 #'         The row represents the set of points and the column for the heights.
 #' 
 #' @export

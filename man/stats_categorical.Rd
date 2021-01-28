@@ -15,8 +15,8 @@ The column represents the points or stations}
 
 \item{dichotomous}{named list,
 \itemize{ 
-  \item{thres: }{the threshold to use to create the contingency tabl}
-  \item{fun: }{the operator function to be applied}
+  \item{thres: }{the threshold to use to create the contingency table}
+  \item{fun: }{the operator function to be applied. Options: ">=", ">", "<=", "<"}
 }}
 }
 \value{

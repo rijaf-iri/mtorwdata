@@ -7,7 +7,7 @@
 #' @param points data.frame(name, longitude, latitude)
 #' @param padxy c(padx, pady) in decimal degree
 #' 
-#' @return list
+#' @return A list object
 #' 
 #' @export
 
