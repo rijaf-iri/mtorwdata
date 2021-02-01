@@ -42,5 +42,7 @@ export(extractCAPPI)
 export(stats_continuous)
 export(stats_categorical)
 export(stats_volumetric_quantile)
+export(computeValidationStats)
 
 export(readCDTStationFormat)
+export(filterCDTStationsData)

@@ -25,7 +25,7 @@ readCDTStationFormat <- function(file, sep = ",", missing = "-99"){
     seph <- rle(!grepl('[^[:digit:]]', as.character(donne[, 1])))
     ipos <- which(!seph$values & seph$lengths >= 3 & seph$lengths <= 4)
     if(length(ipos) == 0 | ipos[1] != 1){
-        stop("Station data is not in a standard unambiguous CDT format")
+        stop("Station data is not in a standard CDT format")
     }
     pos <- seph$lengths[ipos[1]]
 
@@ -48,3 +48,50 @@ readCDTStationFormat <- function(file, sep = ",", missing = "-99"){
 
     return(dat)
 }
+
+#' Filter CDT stations data.
+#'
+#' Filter two CDT stations data to match the stations and dates.
+#' 
+#' @param stn_data,grd_data A named list containing the CDT stations data, output from \code{readCDTStationFormat}
+#' 
+#' @return A list object
+#' \itemize{
+#'   \item{\strong{stn}: }{The filtered \code{stn_data}}
+#'   \item{\strong{grd}: }{The filtered \code{grd_data}}
+#' }
+#' 
+#' @export
+
+filterCDTStationsData <- function(stn_data, grd_data){
+    it <- match(grd_data$dates, stn_data$dates)
+    it <- it[!is.na(it)]
+    if(length(it) == 0)
+        stop("Dates do not overlap")
+
+    stn_data$dates <- stn_data$dates[it]
+    stn_data$data <- stn_data$data[it, , drop = FALSE]
+
+    it1 <- grd_data$dates %in% stn_data$dates
+    grd_data$dates <- grd_data$dates[it1]
+    grd_data$data <- grd_data$data[it1, , drop = FALSE]
+
+    id <- match(grd_data$id, stn_data$id)
+    id <- id[!is.na(id)]
+    if(length(id) == 0)
+        stop("Stations do not overlap")
+
+    stn_data$id <- stn_data$id[id]
+    stn_data$lon <- stn_data$lon[id]
+    stn_data$lat <- stn_data$lat[id]
+    stn_data$data <- stn_data$data[, id, drop = FALSE]
+
+    id1 <- grd_data$id %in% stn_data$id
+    grd_data$id <- grd_data$id[id1]
+    grd_data$lon <- grd_data$lon[id1]
+    grd_data$lat <- grd_data$lat[id1]
+    grd_data$data <- grd_data$data[, id1, drop = FALSE]
+
+    list(stn = stn_data, grd = grd_data)
+}
+
