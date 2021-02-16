@@ -28,6 +28,11 @@ awsGetHourlyPrecip <- function(start_time, end_time, url){
     url <- paste0(url, "/awsGetHourlyPrecip")
     req <- curl::curl_fetch_memory(url, handle = handle)
 
+    if(req$status_code != 200){
+        cat("An error has occurred\n")
+        return(NULL)
+    }
+
     out <- jsonlite::fromJSON(rawToChar(req$content))
     return(out)
 }
