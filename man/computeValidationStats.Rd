@@ -10,8 +10,8 @@ computeValidationStats(
   validation_type = "stations",
   categorical_thres = 1,
   categorical_fun = ">=",
-  volumetric_type = "threshold",
-  volumetric_pars = NULL
+  volumetric_type = "percentile",
+  volumetric_pars = 50
 )
 }
 \arguments{

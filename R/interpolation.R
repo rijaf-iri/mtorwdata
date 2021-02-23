@@ -38,6 +38,7 @@ interp_surface_grid <- function(x, y, z, x_g, y_g, edge = TRUE)
          z[cbind(lx1, ly1 + 1)] * (1 - ex) * ey +
          z[cbind(lx1 + 1, ly1 + 1)] * ex * ey
 
+    z[is.na(z)] <- NaN
     return(z)
 }
 
@@ -64,6 +65,7 @@ interp3d_xsec <- function(x, y, z, v, x_g, y_g, z_g){
                       data = data, newdata = newdata,
                       nmax = 8, maxdist = 1000, debug.level = 0)
     out <- out$var1.pred
+    out[is.na(out)] <- NaN
     return(out)
 }
 
@@ -94,7 +96,9 @@ interp_ppi_ranges_cappi <- function(x, y, z, x_g, y_g){
         dat <- dat[!ina, , drop = FALSE]
         kr <- gstat::krige(z~1, locations = ~x+y, data = dat, newdata = grd,
                            nmax = 1, maxdist = 0.0135, debug.level = 0)
-        matrix(kr$var1.pred, nx, ny)
+        m <- matrix(kr$var1.pred, nx, ny)
+        m[is.na(m)] <- NaN
+        m
     })
 
     return(out)

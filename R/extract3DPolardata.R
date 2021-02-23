@@ -76,7 +76,9 @@ extract_3DPolarData <- function(grid_coords, grid_data, grid_interp,
             pts_elv
         })
 
-        do.call(cbind, out)
+        out <- do.call(cbind, out)
+        out[is.na(out)] <- NaN
+        out
     })
 
     intrep_data <- lapply(intrep_data, t)

@@ -38,7 +38,7 @@ extract_3DGridData <- function(grid_coords, grid_data,
     ij2xtr <- ij2xtr[nonZero]
 
     extdat0 <- lapply(seq_along(grid_data), function(j){
-        matrix(NA, length(ij2xtr), length(levels))
+        matrix(NaN, length(ij2xtr), length(levels))
     })
     names(extdat0) <- names(grid_data)
 
@@ -71,7 +71,9 @@ extract_3DGridData <- function(grid_coords, grid_data,
     nom <- names(data)
     don <- lapply(nom, function(n){
         x <- lapply(extdat, '[[', n)
-        do.call(rbind, x)
+        x <- do.call(rbind, x)
+        x[is.na(x)] <- NaN
+        x
     })
     names(don) <- nom
 
